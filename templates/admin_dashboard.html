@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - PetNest</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100 font-['Poppins'] flex h-screen overflow-hidden">
+
+    <aside class="w-64 bg-[#0D1117] text-white flex flex-col h-full shadow-xl z-20 shrink-0">
+        <div class="p-6 flex items-center gap-3 border-b border-gray-800">
+            <svg class="w-8 h-8 text-[#5AB9B4]" fill="currentColor" viewBox="0 0 512 512"><path d="M256 224c-79.41 0-192 122.76-192 200.25 0 34.9 26.81 55.75 71.74 55.75 48.84 0 81.09-25.08 120.26-25.08 39.51 0 71.85 25.08 120.26 25.08 44.93 0 71.74-20.85 71.74-55.75C448 346.76 335.41 224 256 224z"></path></svg>
+            <span class="text-2xl font-bold text-white">PetNest</span>
+        </div>
+        
+        <div class="p-4">
+            <p class="text-xs text-gray-500 uppercase tracking-wider font-bold mb-3">Admin Panel</p>
+            <nav class="space-y-2">
+                <a href="/admin/{{ user_id }}/dashboard" class="flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-colors {% if active_tab == 'overview' %}bg-[#161B22] text-[#5AB9B4] border border-gray-700{% else %}text-gray-400 hover:bg-[#161B22] hover:text-white{% endif %}">
+                    📊 Overview
+                </a>
+                <a href="/admin/{{ user_id }}/products" class="flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-colors {% if active_tab == 'products' %}bg-[#161B22] text-[#5AB9B4] border border-gray-700{% else %}text-gray-400 hover:bg-[#161B22] hover:text-white{% endif %}">
+                    📦 Products & Inventory
+                </a>
+                <a href="/admin/{{ user_id }}/orders" class="flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-colors {% if active_tab == 'orders' %}bg-[#161B22] text-[#5AB9B4] border border-gray-700{% else %}text-gray-400 hover:bg-[#161B22] hover:text-white{% endif %}">
+                    🛒 Order History
+                </a>
+                <a href="/admin/{{ user_id }}/users" class="flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-colors {% if active_tab == 'users' %}bg-[#161B22] text-[#5AB9B4] border border-gray-700{% else %}text-gray-400 hover:bg-[#161B22] hover:text-white{% endif %}">
+                    👥 Users & Sellers
+                </a>
+                <a href="/admin/{{ user_id }}/approvals" class="flex items-center justify-between px-4 py-3 rounded-xl font-semibold transition-colors {% if active_tab == 'approvals' %}bg-[#161B22] text-[#5AB9B4] border border-gray-700{% else %}text-gray-400 hover:bg-[#161B22] hover:text-white{% endif %}">
+                    <span class="flex items-center gap-3">✅ Approvals</span>
+                    {% if pending_approvals > 0 %}
+                        <span class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{{ pending_approvals }}</span>
+                    {% endif %}
+                </a>
+                <a href="/admin/{{ user_id }}/transactions" class="flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-colors {% if active_tab == 'transactions' %}bg-[#161B22] text-[#5AB9B4] border border-gray-700{% else %}text-gray-400 hover:bg-[#161B22] hover:text-white{% endif %}">
+                    💰 Transactions
+                </a>
+                <a href="/admin/{{ user_id }}/services" class="flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-colors {% if active_tab == 'services' %}bg-[#161B22] text-[#5AB9B4] border border-gray-700{% else %}text-gray-400 hover:bg-[#161B22] hover:text-white{% endif %}">
+                    🩺 Services
+                </a>
+                <a href="/admin/{{ user_id }}/discounts" class="flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-colors {% if active_tab == 'discounts' %}bg-[#161B22] text-[#5AB9B4] border border-gray-700{% else %}text-gray-400 hover:bg-[#161B22] hover:text-white{% endif %}">
+                    🏷️ Discounts
+                </a>
+            </nav>
+        </div>
+        <div class="mt-auto p-4 border-t border-gray-800">
+            <a href="/user/{{ user_id }}" class="flex items-center gap-3 text-red-400 hover:text-red-300 px-4 py-2 font-medium transition-colors">🚪 Back to Store</a>
+        </div>
+    </aside>
+
+    <main class="flex-1 h-full overflow-y-auto bg-gray-50 p-8">
+        
+        <header class="flex justify-between items-center mb-8">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-bold text-[#2C3E50] capitalize">{{ active_tab|replace('_', ' ') }}</h1>
+                <p class="text-gray-500 text-sm mt-1">Logged in as {{ username }} (Super Admin)</p>
+            </div>
+            <div class="flex items-center gap-4 text-sm font-medium text-gray-600 bg-white px-4 py-2 rounded-lg border shadow-sm">
+                <span id="current-date">🗓️ Today</span>
+            </div>
+        </header>
+
+        {% if active_tab == 'overview' %}
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 md:p-5 mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                <div>
+                    <h3 class="text-base font-bold text-[#2C3E50]">Sales Analytics</h3>
+                    <p class="text-xs text-gray-500">Insights are based on completed (Delivered) orders.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <label for="overview-period" class="text-xs font-semibold text-gray-500 uppercase">Range</label>
+                    <select id="overview-period" class="border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-[#5AB9B4]">
+                        <option value="24h">Last 24 Hours</option>
+                        <option value="7d" selected>Last 7 Days</option>
+                        <option value="90d">Last 90 Days</option>
+                        <option value="12m">Last 12 Months</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col">
+                    <span class="text-gray-500 text-sm font-semibold mb-1">Completed Revenue</span>
+                    <span id="kpi-revenue" class="text-3xl font-bold text-[#2C3E50]">${{ "%.2f"|format(today_rev) }}</span>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col">
+                    <span class="text-gray-500 text-sm font-semibold mb-1">Completed Orders</span>
+                    <span id="kpi-orders" class="text-3xl font-bold text-[#2C3E50]">{{ weekly_orders }}</span>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col">
+                    <span class="text-gray-500 text-sm font-semibold mb-1">Average Order Value</span>
+                    <span id="kpi-aov" class="text-3xl font-bold text-[#2C3E50]">${{ "%.2f"|format(avg_order_value) }}</span>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col">
+                    <span class="text-gray-500 text-sm font-semibold mb-1">Unique Buyers</span>
+                    <span id="kpi-customers" class="text-3xl font-bold text-[#2C3E50]">{{ active_customers }}</span>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col">
+                    <span class="text-gray-500 text-sm font-semibold mb-1">Units Sold</span>
+                    <span id="kpi-units" class="text-3xl font-bold text-[#2C3E50]">0</span>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col">
+                    <span class="text-gray-500 text-sm font-semibold mb-1">Lifetime Completed Orders</span>
+                    <span class="text-3xl font-bold text-[#2C3E50]">{{ completed_orders }}</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 lg:col-span-2">
+                    <h3 id="overview-chart-title" class="text-lg font-bold text-[#2C3E50] mb-4">Revenue Trends</h3>
+                    <div class="w-full h-64"><canvas id="revenueChart"></canvas></div>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <h3 class="text-lg font-bold text-[#2C3E50] mb-4">Top Selling Products</h3>
+                    <div class="space-y-4">
+                        {% for product in top_products %}
+                        <div class="flex items-center gap-3 border-b border-gray-50 pb-3 last:border-0">
+                            <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center text-lg font-bold text-[#5AB9B4]">#{{ loop.index }}</div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-bold text-[#2C3E50] truncate">{{ product.Name }}</p>
+                                <p class="text-xs text-gray-500">{{ product.TotalSold }} Units Sold</p>
+                            </div>
+                            <span class="text-sm font-bold text-[#5AB9B4]">${{ "%.2f"|format(product.Price) }}</span>
+                        </div>
+                        {% endfor %}
+                        {% if not top_products %}
+                        <p class="text-sm text-gray-500 text-center py-4">No sales data available yet.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        {% if active_tab == 'users' %}
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                    <h3 class="text-lg font-bold text-[#2C3E50]">All Registered Users</h3>
+                    <input type="text" placeholder="Search users..." class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm outline-none focus:border-[#5AB9B4]">
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-white text-gray-500 text-xs uppercase tracking-wider border-b border-gray-200">
+                                <th class="p-4 font-bold">ID</th>
+                                <th class="p-4 font-bold">Name & Email</th>
+                                <th class="p-4 font-bold">Role</th>
+                                <th class="p-4 font-bold">Status</th>
+                                <th class="p-4 font-bold text-right">Manage</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm">
+                            {% for u in all_users %}
+                            <tr class="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                                <td class="p-4 text-gray-500 font-medium">#{{ u.UserID }}</td>
+                                <td class="p-4">
+                                    <p class="font-bold text-[#2C3E50]">{{ u.Name }}</p>
+                                    <p class="text-xs text-gray-500">{{ u.Email }}</p>
+                                </td>
+                                <td class="p-4"><span class="bg-gray-100 text-gray-700 px-2 py-1 rounded font-bold text-xs">{{ u.Role }}</span></td>
+                                <td class="p-4">
+                                    {% if u.AccountStatus == 'Active' %}
+                                        <span class="text-green-600 font-bold text-xs flex items-center gap-1">● Active</span>
+                                    {% elif u.AccountStatus == 'Restricted' %}
+                                        <span class="text-red-600 font-bold text-xs flex items-center gap-1">● Restricted</span>
+                                    {% else %}
+                                        <span class="text-yellow-600 font-bold text-xs flex items-center gap-1">● {{ u.AccountStatus }}</span>
+                                    {% endif %}
+                                </td>
+                                <td class="p-4 text-right">
+                                    {% if u.Role == 'Admin' %}
+                                        <button type="button" data-user-id="{{ u.UserID }}" data-user-name="{{ u.Name|e }}" onclick="openAdminEditModal(this.dataset.userId, this.dataset.userName)" class="text-blue-500 hover:text-blue-700 font-bold text-xs underline">Edit Profile</button>
+                                    {% else %}
+                                        <div class="flex justify-end gap-3">
+                                            <button type="button" data-user-id="{{ u.UserID }}" onclick="openNotifyModal(this.dataset.userId)" class="text-gray-500 hover:text-gray-700 font-bold text-xs underline">Notify</button>
+                                            {% if u.AccountStatus == 'Restricted' %}
+                                                <button type="button" data-user-id="{{ u.UserID }}" onclick="submitRestrictUser(this.dataset.userId, 'Unrestrict')" class="text-green-500 hover:text-green-700 font-bold text-xs underline">Unrestrict</button>
+                                            {% else %}
+                                                <button type="button" data-user-id="{{ u.UserID }}" onclick="openRestrictModal(this.dataset.userId)" class="text-red-500 hover:text-red-700 font-bold text-xs underline">Restrict</button>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% endif %}
+
+        {% if active_tab == 'approvals' %}
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="p-6 border-b border-gray-100 bg-gray-50">
+                    <h3 class="text-lg font-bold text-[#2C3E50]">Pending Account Approvals</h3>
+                    <p class="text-sm text-gray-500 mt-1">Review new Sellers, Vets, and Service Providers.</p>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-white text-gray-500 text-xs uppercase tracking-wider border-b border-gray-200">
+                                <th class="p-4 font-bold">Request Type</th>
+                                <th class="p-4 font-bold">Applicant Details</th>
+                                <th class="p-4 font-bold text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm">
+                            {% for approval in pending_users %}
+                            <tr class="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                                <td class="p-4"><span class="bg-blue-100 text-blue-700 px-2 py-1 rounded font-bold text-xs">{{ approval.Role }} Account</span></td>
+                                <td class="p-4">
+                                    <p class="font-bold text-[#2C3E50]">{{ approval.Name }}</p>
+                                    <p class="text-xs text-gray-500">{{ approval.Email }}</p>
+                                </td>
+                                <td class="p-4 text-right space-x-2">
+                                    <button type="button" data-user-id="{{ approval.UserID }}" onclick="updateAccountStatus(this.dataset.userId, 'Active')" class="bg-green-100 text-green-700 hover:bg-green-200 px-3 py-1.5 rounded font-bold text-xs transition-colors shadow-sm">Approve</button>
+                                    <button type="button" data-user-id="{{ approval.UserID }}" onclick="updateAccountStatus(this.dataset.userId, 'Rejected')" class="bg-red-100 text-red-700 hover:bg-red-200 px-3 py-1.5 rounded font-bold text-xs transition-colors shadow-sm">Reject</button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            {% if not pending_users %}
+                            <tr>
+                                <td colspan="3" class="p-10 text-center text-gray-500 font-medium">✅ All caught up! No pending approvals.</td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% endif %}
+
+        {% if active_tab == 'products' %}
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                    <div>
+                        <h3 class="text-lg font-bold text-[#2C3E50]">Product Inventory</h3>
+                        <p class="text-sm text-gray-500 mt-1">Manage stock, price, and listing status.</p>
+                    </div>
+                    <button type="button" onclick="openAddProductModal()" class="bg-[#5AB9B4] text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-[#4a9c98]">+ Add Product</button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-white text-gray-500 text-xs uppercase tracking-wider border-b border-gray-200">
+                                <th class="p-4 font-bold">ID</th>
+                                <th class="p-4 font-bold">Product</th>
+                                <th class="p-4 font-bold">Category</th>
+                                <th class="p-4 font-bold">Seller</th>
+                                <th class="p-4 font-bold">Price</th>
+                                <th class="p-4 font-bold">Stock</th>
+                                <th class="p-4 font-bold">Status</th>
+                                <th class="p-4 font-bold text-right">Manage</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm">
+                            {% for p in products %}
+                            <tr class="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                                <td class="p-4 text-gray-500 font-medium">#{{ p.ProductID }}</td>
+                                <td class="p-4">
+                                    <p class="font-bold text-[#2C3E50]">{{ p.Name }}</p>
+                                </td>
+                                <td class="p-4"><span class="bg-gray-100 text-gray-700 px-2 py-1 rounded font-bold text-xs">{{ p.PetCategory or '-' }}</span></td>
+                                <td class="p-4 text-gray-600">{{ p.SellerName or 'In-house' }}</td>
+                                <td class="p-4 font-semibold text-[#2C3E50]">${{ "%.2f"|format(p.Price) }}</td>
+                                <td class="p-4">
+                                    {% if p.StockQuantity > 0 %}
+                                        <span class="text-green-600 font-bold">{{ p.StockQuantity }}</span>
+                                    {% else %}
+                                        <span class="text-red-600 font-bold">0</span>
+                                    {% endif %}
+                                </td>
+                                <td class="p-4">
+                                    {% if p.Status == 'Active' %}
+                                        <span class="text-green-600 font-bold text-xs">● Active</span>
+                                    {% else %}
+                                        <span class="text-gray-500 font-bold text-xs">● Inactive</span>
+                                    {% endif %}
+                                </td>
+                                <td class="p-4 text-right">
+                                    <div class="flex justify-end gap-3">
+                                        <button type="button" data-product-id="{{ p.ProductID }}" data-name="{{ p.Name|e }}" data-price="{{ p.Price }}" data-stock="{{ p.StockQuantity }}" data-status="{{ p.Status }}" onclick="openEditProductModal(this.dataset.productId, this.dataset.name, this.dataset.price, this.dataset.stock, this.dataset.status)" class="text-blue-500 hover:text-blue-700 font-bold text-xs underline">Edit</button>
+                                        {% if p.Status == 'Active' %}
+                                            <button type="button" data-product-id="{{ p.ProductID }}" onclick="toggleProductStatus(this.dataset.productId, 'Inactive')" class="text-red-500 hover:text-red-700 font-bold text-xs underline">Deactivate</button>
+                                        {% else %}
+                                            <button type="button" data-product-id="{{ p.ProductID }}" onclick="toggleProductStatus(this.dataset.productId, 'Active')" class="text-green-500 hover:text-green-700 font-bold text-xs underline">Activate</button>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            {% if not products %}
+                            <tr>
+                                <td colspan="8" class="p-10 text-center text-gray-500 font-medium">No products found.</td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% endif %}
+
+        {% if active_tab == 'orders' %}
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="p-6 border-b border-gray-100 bg-gray-50">
+                    <h3 class="text-lg font-bold text-[#2C3E50]">Order History</h3>
+                    <p class="text-sm text-gray-500 mt-1">Track and update customer order statuses.</p>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-white text-gray-500 text-xs uppercase tracking-wider border-b border-gray-200">
+                                <th class="p-4 font-bold">Order</th>
+                                <th class="p-4 font-bold">Customer</th>
+                                <th class="p-4 font-bold">Date</th>
+                                <th class="p-4 font-bold">Total</th>
+                                <th class="p-4 font-bold">Status</th>
+                                <th class="p-4 font-bold text-right">Manage</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm">
+                            {% for o in orders %}
+                            <tr class="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                                <td class="p-4 text-gray-600 font-semibold">#{{ o.OrderID }}</td>
+                                <td class="p-4">
+                                    <p class="font-bold text-[#2C3E50]">{{ o.CustomerName }}</p>
+                                </td>
+                                <td class="p-4 text-gray-600">{{ o.OrderDate }}</td>
+                                <td class="p-4 font-semibold text-[#2C3E50]">${{ "%.2f"|format(o.TotalAmount) }}</td>
+                                <td class="p-4">
+                                    {% if o.OrderStatus == 'Delivered' %}
+                                        <span class="text-green-600 font-bold text-xs">● Delivered</span>
+                                    {% elif o.OrderStatus == 'Cancelled' %}
+                                        <span class="text-red-600 font-bold text-xs">● Cancelled</span>
+                                    {% elif o.OrderStatus == 'Shipped' %}
+                                        <span class="text-blue-600 font-bold text-xs">● Shipped</span>
+                                    {% elif o.OrderStatus == 'Processing' %}
+                                        <span class="text-purple-600 font-bold text-xs">● Processing</span>
+                                    {% else %}
+                                        <span class="text-yellow-600 font-bold text-xs">● Pending</span>
+                                    {% endif %}
+                                </td>
+                                <td class="p-4 text-right">
+                                    <select data-order-id="{{ o.OrderID }}" data-current-status="{{ o.OrderStatus }}" onchange="changeOrderStatus(this.dataset.orderId, this.value, this.dataset.currentStatus)" class="border border-gray-300 rounded-lg px-2 py-1.5 text-xs outline-none focus:border-[#5AB9B4]">
+                                        <option value="Pending" {% if o.OrderStatus == 'Pending' %}selected{% endif %}>Pending</option>
+                                        <option value="Processing" {% if o.OrderStatus == 'Processing' %}selected{% endif %}>Processing</option>
+                                        <option value="Shipped" {% if o.OrderStatus == 'Shipped' %}selected{% endif %}>Shipped</option>
+                                        <option value="Delivered" {% if o.OrderStatus == 'Delivered' %}selected{% endif %}>Delivered</option>
+                                        <option value="Cancelled" {% if o.OrderStatus == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            {% if not orders %}
+                            <tr>
+                                <td colspan="6" class="p-10 text-center text-gray-500 font-medium">No orders found.</td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% endif %}
+
+        {% if active_tab == 'transactions' %}
+            <div class="bg-white p-10 rounded-2xl shadow-sm border border-gray-100 text-center mt-10">
+                <div class="text-4xl mb-4">🚧</div>
+                <h3 class="text-xl font-bold text-[#2C3E50] mb-2">Under Construction</h3>
+                <p class="text-gray-500">The <b>{{ active_tab|capitalize }}</b> module is currently being built.</p>
+            </div>
+        {% endif %}
+
+        {% if active_tab == 'services' %}
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
+                <div class="p-6 border-b border-gray-100 bg-gray-50">
+                    <h3 class="text-lg font-bold text-[#2C3E50]">Vet Services</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-white text-gray-500 text-xs uppercase tracking-wider border-b border-gray-200">
+                                <th class="p-4 font-bold">Vet</th>
+                                <th class="p-4 font-bold">Clinic</th>
+                                <th class="p-4 font-bold">Service</th>
+                                <th class="p-4 font-bold">Pet Category</th>
+                                <th class="p-4 font-bold">Price</th>
+                                <th class="p-4 font-bold">Duration</th>
+                                <th class="p-4 font-bold">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm">
+                            {% for s in vet_services %}
+                            <tr class="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                                <td class="p-4 text-[#2C3E50] font-semibold">{{ s.VetName }}</td>
+                                <td class="p-4 text-gray-600">{{ s.ClinicName or 'N/A' }}</td>
+                                <td class="p-4 text-gray-700">
+                                    <p class="font-semibold">{{ s.ServiceName }}</p>
+                                    <p class="text-xs text-gray-500 mt-1">{{ s.Description }}</p>
+                                </td>
+                                <td class="p-4 text-gray-600">{{ s.PetCategory or 'General' }}</td>
+                                <td class="p-4 text-gray-600">${{ s.Price }}</td>
+                                <td class="p-4 text-gray-600">{{ s.DurationMinutes }} min</td>
+                                <td class="p-4 text-gray-600">{% if s.IsActive %}Active{% else %}Inactive{% endif %}</td>
+                            </tr>
+                            {% endfor %}
+                            {% if not vet_services %}
+                            <tr><td colspan="7" class="p-8 text-center text-gray-500 font-medium">No vet services found.</td></tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="p-6 border-b border-gray-100 bg-gray-50">
+                    <h3 class="text-lg font-bold text-[#2C3E50]">Service Provider Services</h3>
+                    <p class="text-sm text-gray-500 mt-1">Listings from <code class="text-xs bg-gray-100 px-1 rounded">ProviderServices</code> linked to provider accounts.</p>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-white text-gray-500 text-xs uppercase tracking-wider border-b border-gray-200">
+                                <th class="p-4 font-bold">ID</th>
+                                <th class="p-4 font-bold">Provider</th>
+                                <th class="p-4 font-bold">Business &amp; profile</th>
+                                <th class="p-4 font-bold">Service</th>
+                                <th class="p-4 font-bold">Pet category</th>
+                                <th class="p-4 font-bold">Price</th>
+                                <th class="p-4 font-bold">Duration</th>
+                                <th class="p-4 font-bold">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm">
+                            {% for s in provider_services %}
+                            <tr class="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                                <td class="p-4 text-gray-500 font-mono text-xs">#{{ s.ProviderID }}</td>
+                                <td class="p-4 text-[#2C3E50] font-semibold">{{ s.ProviderName }}</td>
+                                <td class="p-4 text-gray-600">
+                                    <p class="font-medium text-[#2C3E50]">{{ s.BusinessName or 'N/A' }}</p>
+                                    <p class="text-xs text-gray-500 mt-0.5">{{ s.ServiceType or '—' }}{% if s.AnimalExpertise %} · {{ s.AnimalExpertise }}{% endif %}</p>
+                                    {% if s.ProviderAccountStatus %}<p class="text-xs text-gray-400 mt-1">Account: {{ s.ProviderAccountStatus }}</p>{% endif %}
+                                </td>
+                                <td class="p-4 text-gray-700">
+                                    <p class="font-semibold">{{ s.ServiceName }}</p>
+                                    <p class="text-xs text-gray-500 mt-1 line-clamp-2">{{ s.Description }}</p>
+                                </td>
+                                <td class="p-4 text-gray-600">{{ s.ServiceCategory or 'All' }}</td>
+                                <td class="p-4 text-gray-600">${{ s.Price }}</td>
+                                <td class="p-4 text-gray-600">{{ s.DurationMinutes }} min</td>
+                                <td class="p-4 text-gray-600">{% if s.IsActive %}Active{% else %}Inactive{% endif %}</td>
+                            </tr>
+                            {% endfor %}
+                            {% if not provider_services %}
+                            <tr><td colspan="8" class="p-8 text-center text-gray-500 font-medium">No service provider services found. Providers add listings under Manage Services after the <code class="text-xs bg-gray-100 px-1 rounded">ProviderServices</code> table exists.</td></tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% endif %}
+
+        {% if active_tab == 'discounts' %}
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                    <div>
+                        <h3 class="text-lg font-bold text-[#2C3E50]">Discount Management</h3>
+                        <p class="text-sm text-gray-500 mt-1">Create and control active promo offers.</p>
+                    </div>
+                    <button type="button" onclick="openAddDiscountModal()" class="bg-[#5AB9B4] text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-[#4a9c98]">+ New Discount</button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-white text-gray-500 text-xs uppercase tracking-wider border-b border-gray-200">
+                                <th class="p-4 font-bold">Code</th>
+                                <th class="p-4 font-bold">Discount</th>
+                                <th class="p-4 font-bold">Category</th>
+                                <th class="p-4 font-bold">Target</th>
+                                <th class="p-4 font-bold">Valid Until</th>
+                                <th class="p-4 font-bold">Status</th>
+                                <th class="p-4 font-bold text-right">Manage</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm">
+                            {% for d in discounts %}
+                            <tr class="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                                <td class="p-4 font-bold text-[#2C3E50]">{{ d.OfferCode }}</td>
+                                <td class="p-4 text-[#2C3E50]">{{ d.DiscountPercent }}%</td>
+                                <td class="p-4 text-gray-600">{{ d.AppliesToCategory or 'All categories' }}</td>
+                                <td class="p-4 text-gray-600">{{ d.TargetUserName or 'All users' }}</td>
+                                <td class="p-4 text-gray-600">{{ d.ValidUntil }}</td>
+                                <td class="p-4">
+                                    {% if d.IsActive %}
+                                        <span class="text-green-600 font-bold text-xs">● Active</span>
+                                    {% else %}
+                                        <span class="text-gray-500 font-bold text-xs">● Inactive</span>
+                                    {% endif %}
+                                </td>
+                                <td class="p-4 text-right">
+                                    {% if d.IsActive %}
+                                        <button type="button" data-offer-id="{{ d.OfferID }}" onclick="toggleDiscount(this.dataset.offerId, false)" class="text-red-500 hover:text-red-700 font-bold text-xs underline">Deactivate</button>
+                                    {% else %}
+                                        <button type="button" data-offer-id="{{ d.OfferID }}" onclick="toggleDiscount(this.dataset.offerId, true)" class="text-green-500 hover:text-green-700 font-bold text-xs underline">Activate</button>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            {% if not discounts %}
+                            <tr>
+                                <td colspan="7" class="p-10 text-center text-gray-500 font-medium">No discounts configured yet.</td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% endif %}
+
+    </main>
+
+    <div id="adminEditModal" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center">
+        <div class="bg-white rounded-2xl w-full max-w-md p-6">
+            <h2 class="text-xl font-bold text-[#2C3E50] mb-4">Edit Admin Profile</h2>
+            <input type="hidden" id="editAdminId">
+            <div class="space-y-4">
+                <div>
+                    <label class="text-xs font-bold text-gray-500 uppercase">Name</label>
+                    <input type="text" id="editAdminName" class="w-full border border-gray-300 rounded-lg p-2 outline-none focus:border-[#5AB9B4] mt-1">
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-gray-500 uppercase">New Password (Leave blank to keep current)</label>
+                    <input type="password" id="editAdminPass" class="w-full border border-gray-300 rounded-lg p-2 outline-none focus:border-[#5AB9B4] mt-1">
+                </div>
+            </div>
+            <div class="flex justify-end gap-2 mt-6">
+                <button onclick="document.getElementById('adminEditModal').classList.add('hidden')" class="px-4 py-2 text-gray-500 font-bold hover:bg-gray-100 rounded-lg">Cancel</button>
+                <button onclick="submitAdminEdit()" class="px-4 py-2 bg-[#5AB9B4] text-white font-bold rounded-lg hover:bg-[#4a9c98]">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="restrictModal" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center">
+        <div class="bg-white rounded-2xl w-full max-w-md p-6">
+            <h2 class="text-xl font-bold text-red-600 mb-2">Restrict Account</h2>
+            <p class="text-sm text-gray-500 mb-4">This will temporarily disable the user's access and send them this system notification.</p>
+            <input type="hidden" id="restrictUserId">
+            <textarea id="restrictReason" rows="4" class="w-full border border-gray-300 rounded-lg p-3 outline-none focus:border-red-500 text-sm">Your account has been temporarily restricted due to a violation of our policies. Reason: </textarea>
+            <div class="flex justify-end gap-2 mt-4">
+                <button onclick="document.getElementById('restrictModal').classList.add('hidden')" class="px-4 py-2 text-gray-500 font-bold hover:bg-gray-100 rounded-lg">Cancel</button>
+                <button onclick="submitRestrictUser(document.getElementById('restrictUserId').value, 'Restrict')" class="px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700">Restrict Account</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="notifyModal" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center">
+        <div class="bg-white rounded-2xl w-full max-w-md p-6">
+            <h2 class="text-xl font-bold text-[#2C3E50] mb-4">Send System Notification</h2>
+            <input type="hidden" id="notifyUserId">
+            <textarea id="notifyMessage" rows="4" placeholder="Type your message here..." class="w-full border border-gray-300 rounded-lg p-3 outline-none focus:border-[#5AB9B4] text-sm"></textarea>
+            <div class="flex justify-end gap-2 mt-4">
+                <button onclick="document.getElementById('notifyModal').classList.add('hidden')" class="px-4 py-2 text-gray-500 font-bold hover:bg-gray-100 rounded-lg">Cancel</button>
+                <button onclick="submitNotification()" class="px-4 py-2 bg-[#0D1117] text-white font-bold rounded-lg hover:bg-[#161B22]">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="editProductModal" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center">
+        <div class="bg-white rounded-2xl w-full max-w-md p-6">
+            <h2 class="text-xl font-bold text-[#2C3E50] mb-4">Edit Product</h2>
+            <input type="hidden" id="editProductId">
+            <div class="space-y-4">
+                <div>
+                    <label class="text-xs font-bold text-gray-500 uppercase">Product Name</label>
+                    <input type="text" id="editProductName" class="w-full border border-gray-300 rounded-lg p-2 outline-none mt-1 bg-gray-100 text-gray-500" disabled>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-xs font-bold text-gray-500 uppercase">Price</label>
+                        <input type="number" id="editProductPrice" min="0" step="0.01" class="w-full border border-gray-300 rounded-lg p-2 outline-none focus:border-[#5AB9B4] mt-1">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-gray-500 uppercase">Stock</label>
+                        <input type="number" id="editProductStock" min="0" step="1" class="w-full border border-gray-300 rounded-lg p-2 outline-none focus:border-[#5AB9B4] mt-1">
+                    </div>
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-gray-500 uppercase">Status</label>
+                    <select id="editProductStatus" class="w-full border border-gray-300 rounded-lg p-2 outline-none focus:border-[#5AB9B4] mt-1">
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex justify-end gap-2 mt-6">
+                <button onclick="document.getElementById('editProductModal').classList.add('hidden')" class="px-4 py-2 text-gray-500 font-bold hover:bg-gray-100 rounded-lg">Cancel</button>
+                <button onclick="submitProductUpdate()" class="px-4 py-2 bg-[#5AB9B4] text-white font-bold rounded-lg hover:bg-[#4a9c98]">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="addProductModal" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center">
+        <div class="bg-white rounded-2xl w-full max-w-md p-6">
+            <h2 class="text-xl font-bold text-[#2C3E50] mb-4">Add New Product</h2>
+            <div class="space-y-4">
+                <div>
+                    <label class="text-xs font-bold text-gray-500 uppercase">Name</label>
+                    <input type="text" id="addProductName" class="w-full border border-gray-300 rounded-lg p-2 outline-none focus:border-[#5AB9B4] mt-1">
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-gray-500 uppercase">Pet Category</label>
+                    <input type="text" id="addProductCategory" class="w-full border border-gray-300 rounded-lg p-2 outline-none focus:border-[#5AB9B4] mt-1">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-xs font-bold text-gray-500 uppercase">Price</label>
+                        <input type="number" id="addProductPrice" min="0" step="0.01" class="w-full border border-gray-300 rounded-lg p-2 outline-none focus:border-[#5AB9B4] mt-1">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-gray-500 uppercase">Stock</label>
+                        <input type="number" id="addProductStock" min="0" step="1" class="w-full border border-gray-300 rounded-lg p-2 outline-none focus:border-[#5AB9B4] mt-1">
+                    </div>
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-gray-500 uppercase">Status</label>
+                    <select id="addProductStatus" class="w-full border border-gray-300 rounded-lg p-2 outline-none focus:border-[#5AB9B4] mt-1">
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex justify-end gap-2 mt-6">
+                <button onclick="document.getElementById('addProductModal').classList.add('hidden')" class="px-4 py-2 text-gray-500 font-bold hover:bg-gray-100 rounded-lg">Cancel</button>
+                <button onclick="submitAddProduct()" class="px-4 py-2 bg-[#5AB9B4] text-white font-bold rounded-lg hover:bg-[#4a9c98]">Create</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="addDiscountModal" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center">
+        <div class="bg-white rounded-2xl w-full max-w-md p-6">
+            <h2 class="text-xl font-bold text-[#2C3E50] mb-4">Create Discount</h2>
+            <div class="space-y-4">
+                <div>
+                    <label class="text-xs font-bold text-gray-500 uppercase">Offer Code</label>
+                    <input type="text" id="addDiscountCode" class="w-full border border-gray-300 rounded-lg p-2 outline-none focus:border-[#5AB9B4] mt-1" placeholder="e.g. SAVE20">
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-gray-500 uppercase">Applies To Category (optional)</label>
+                    <input type="text" id="addDiscountCategory" class="w-full border border-gray-300 rounded-lg p-2 outline-none focus:border-[#5AB9B4] mt-1" placeholder="e.g. Cat (leave empty for all)">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-xs font-bold text-gray-500 uppercase">Discount %</label>
+                        <input type="number" id="addDiscountPercent" min="1" max="95" class="w-full border border-gray-300 rounded-lg p-2 outline-none focus:border-[#5AB9B4] mt-1">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-gray-500 uppercase">Valid Days (optional)</label>
+                        <input type="number" id="addDiscountDays" min="1" class="w-full border border-gray-300 rounded-lg p-2 outline-none focus:border-[#5AB9B4] mt-1" placeholder="Empty = lifetime">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <label class="flex items-center gap-2 text-sm text-gray-700">
+                        <input type="checkbox" id="addDiscountOneTime" class="accent-green-600">
+                        One-time per user
+                    </label>
+                    <div>
+                        <label class="text-xs font-bold text-gray-500 uppercase">Max Total Uses (optional)</label>
+                        <input type="number" id="addDiscountMaxTotal" min="1" class="w-full border border-gray-300 rounded-lg p-2 outline-none focus:border-[#5AB9B4] mt-1" placeholder="Empty = unlimited">
+                    </div>
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-gray-500 uppercase">Target User ID (optional)</label>
+                    <input type="number" id="addDiscountTargetUser" min="1" class="w-full border border-gray-300 rounded-lg p-2 outline-none focus:border-[#5AB9B4] mt-1" placeholder="Leave empty for all users">
+                </div>
+            </div>
+            <div class="flex justify-end gap-2 mt-6">
+                <button onclick="document.getElementById('addDiscountModal').classList.add('hidden')" class="px-4 py-2 text-gray-500 font-bold hover:bg-gray-100 rounded-lg">Cancel</button>
+                <button onclick="submitAddDiscount()" class="px-4 py-2 bg-[#5AB9B4] text-white font-bold rounded-lg hover:bg-[#4a9c98]">Create</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // ----------------------------------------
+        // 5A. UI STATE (Set Today's Date)
+        // ----------------------------------------
+        document.addEventListener('DOMContentLoaded', () => {
+            const dateSpan = document.getElementById('current-date');
+            const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+            dateSpan.innerHTML = `🗓️ Today: <span class="font-bold text-[#2C3E50]">${new Date().toLocaleDateString('en-US', options)}</span>`;
+        });
+
+        // ----------------------------------------
+        // 5B. MODAL CONTROLLERS (Open/Close logic)
+        // ----------------------------------------
+        function openAdminEditModal(id, name) {
+            document.getElementById('editAdminId').value = id;
+            document.getElementById('editAdminName').value = name;
+            document.getElementById('editAdminPass').value = '';
+            document.getElementById('adminEditModal').classList.remove('hidden');
+        }
+
+        function openRestrictModal(id) {
+            document.getElementById('restrictUserId').value = id;
+            document.getElementById('restrictModal').classList.remove('hidden');
+        }
+
+        function openNotifyModal(id) {
+            document.getElementById('notifyUserId').value = id;
+            document.getElementById('notifyMessage').value = '';
+            document.getElementById('notifyModal').classList.remove('hidden');
+        }
+
+        function openEditProductModal(id, name, price, stock, status) {
+            document.getElementById('editProductId').value = id;
+            document.getElementById('editProductName').value = name;
+            document.getElementById('editProductPrice').value = price;
+            document.getElementById('editProductStock').value = stock;
+            document.getElementById('editProductStatus').value = status;
+            document.getElementById('editProductModal').classList.remove('hidden');
+        }
+
+        function openAddProductModal() {
+            document.getElementById('addProductName').value = '';
+            document.getElementById('addProductCategory').value = '';
+            document.getElementById('addProductPrice').value = '';
+            document.getElementById('addProductStock').value = '';
+            document.getElementById('addProductStatus').value = 'Active';
+            document.getElementById('addProductModal').classList.remove('hidden');
+        }
+
+        function openAddDiscountModal() {
+            document.getElementById('addDiscountCode').value = '';
+            document.getElementById('addDiscountCategory').value = '';
+            document.getElementById('addDiscountPercent').value = '';
+            document.getElementById('addDiscountDays').value = '';
+            document.getElementById('addDiscountTargetUser').value = '';
+            document.getElementById('addDiscountOneTime').checked = false;
+            document.getElementById('addDiscountMaxTotal').value = '';
+            document.getElementById('addDiscountModal').classList.remove('hidden');
+        }
+
+        // ----------------------------------------
+        // 5C. API CALLS (Submit actions to python)
+        // ----------------------------------------
+        async function fetchAndReload(url, payload) {
+            try {
+                const response = await fetch(url, { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify(payload) 
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    window.location.reload(); // Instantly refresh to show changes
+                } else {
+                    alert(result.error);
+                }
+            } catch (error) { 
+                console.error(error); 
+                alert("Server error connecting to backend."); 
+            }
+        }
+
+        async function submitAdminEdit() {
+            const id = document.getElementById('editAdminId').value;
+            const name = document.getElementById('editAdminName').value;
+            const pass = document.getElementById('editAdminPass').value;
+            await fetchAndReload('/api/admin/edit-admin', { target_user_id: id, name: name, password: pass });
+        }
+
+        async function submitRestrictUser(id, action) {
+            let reason = "";
+            if (action === 'Restrict') {
+                reason = document.getElementById('restrictReason').value;
+            } else {
+                if (!confirm("Are you sure you want to lift the restriction on this account?")) return;
+            }
+            await fetchAndReload('/api/admin/restrict-user', { target_user_id: id, reason: reason, action: action });
+        }
+
+        async function submitNotification() {
+            const id = document.getElementById('notifyUserId').value;
+            const msg = document.getElementById('notifyMessage').value;
+            if(!msg.trim()) return alert("Message cannot be empty.");
+            await fetchAndReload('/api/admin/send-notification', { target_user_id: id, message: msg });
+        }
+
+        async function updateAccountStatus(userId, newStatus) {
+            const action = newStatus === 'Active' ? 'Approve' : 'Reject';
+            if (!confirm(`Are you sure you want to ${action} this account?`)) return;
+            // Reusing an API route from earlier to update account status directly
+            await fetchAndReload('/api/admin/update-account-status', { target_user_id: userId, status: newStatus });
+        }
+
+        async function submitProductUpdate() {
+            const id = document.getElementById('editProductId').value;
+            const price = parseFloat(document.getElementById('editProductPrice').value);
+            const stock = parseInt(document.getElementById('editProductStock').value, 10);
+            const status = document.getElementById('editProductStatus').value;
+            if (Number.isNaN(price) || Number.isNaN(stock) || stock < 0 || price < 0) {
+                alert('Enter valid price and stock values.');
+                return;
+            }
+            await fetchAndReload('/api/admin/products/update', { product_id: id, price: price, stock: stock, status: status });
+        }
+
+        async function toggleProductStatus(productId, status) {
+            await fetchAndReload('/api/admin/products/toggle-status', { product_id: productId, status: status });
+        }
+
+        async function submitAddProduct() {
+            const name = document.getElementById('addProductName').value.trim();
+            const petCategory = document.getElementById('addProductCategory').value.trim();
+            const price = parseFloat(document.getElementById('addProductPrice').value);
+            const stock = parseInt(document.getElementById('addProductStock').value, 10);
+            const status = document.getElementById('addProductStatus').value;
+            if (!name || !petCategory || Number.isNaN(price) || Number.isNaN(stock) || stock < 0 || price < 0) {
+                alert('Please fill all fields with valid values.');
+                return;
+            }
+            await fetchAndReload('/api/admin/products/create', {
+                name: name,
+                pet_category: petCategory,
+                price: price,
+                stock: stock,
+                status: status
+            });
+        }
+
+        async function changeOrderStatus(orderId, status, currentStatus) {
+            if (status === currentStatus) return;
+            const ok = confirm(`Update order #${orderId} to "${status}"?`);
+            if (!ok) {
+                window.location.reload();
+                return;
+            }
+            await fetchAndReload('/api/admin/orders/update-status', { order_id: orderId, status: status });
+        }
+
+        async function submitAddDiscount() {
+            const code = document.getElementById('addDiscountCode').value.trim().toUpperCase();
+            const category = document.getElementById('addDiscountCategory').value.trim();
+            const discountPercent = parseInt(document.getElementById('addDiscountPercent').value, 10);
+            const validDaysRaw = document.getElementById('addDiscountDays').value.trim();
+            const validDays = validDaysRaw ? parseInt(validDaysRaw, 10) : null;
+            const targetValue = document.getElementById('addDiscountTargetUser').value.trim();
+            const targetUserId = targetValue ? parseInt(targetValue, 10) : null;
+            const oneTimeUse = document.getElementById('addDiscountOneTime').checked;
+            const maxTotalRaw = document.getElementById('addDiscountMaxTotal').value.trim();
+            const maxTotalUses = maxTotalRaw ? parseInt(maxTotalRaw, 10) : null;
+            if (!code || Number.isNaN(discountPercent) || discountPercent < 1 || discountPercent > 95) {
+                alert('Provide a valid code and discount percent (1-95).');
+                return;
+            }
+            if (validDays !== null && (Number.isNaN(validDays) || validDays < 1)) {
+                alert('Valid days must be at least 1, or leave it empty for lifetime.');
+                return;
+            }
+            if (maxTotalUses !== null && (Number.isNaN(maxTotalUses) || maxTotalUses < 1)) {
+                alert('Max total uses must be at least 1, or leave it empty for unlimited.');
+                return;
+            }
+            await fetchAndReload('/api/admin/discounts/create', {
+                code: code,
+                discount_percent: discountPercent,
+                valid_days: validDays,
+                target_user_id: targetUserId
+                ,applies_to_category: category || null
+                ,one_time_use: oneTimeUse
+                ,max_total_uses: maxTotalUses
+            });
+        }
+
+        async function toggleDiscount(offerId, activate) {
+            await fetchAndReload('/api/admin/discounts/toggle', { offer_id: offerId, activate: activate });
+        }
+    </script>
+
+    {% if active_tab == 'overview' %}
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const ctx = document.getElementById('revenueChart');
+            const periodSelect = document.getElementById('overview-period');
+            const title = document.getElementById('overview-chart-title');
+            if (!ctx || !periodSelect || !title) return;
+
+            const gradient = ctx.getContext('2d').createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, 'rgba(90, 185, 180, 0.5)'); 
+            gradient.addColorStop(1, 'rgba(90, 185, 180, 0.0)');
+
+            let chartInstance = null;
+
+            const periodTitles = {
+                '24h': 'Revenue Trends (Last 24 Hours)',
+                '7d': 'Revenue Trends (Last 7 Days)',
+                '90d': 'Revenue Trends (Weekly, Last 90 Days)',
+                '12m': 'Revenue Trends (Monthly, Last 12 Months)'
+            };
+
+            async function loadKpis(period) {
+                const response = await fetch(`/api/admin/overview-metrics?period=${encodeURIComponent(period)}`);
+                const metrics = await response.json();
+                document.getElementById('kpi-revenue').textContent = `$${Number(metrics.revenue).toFixed(2)}`;
+                document.getElementById('kpi-orders').textContent = metrics.orders_count;
+                document.getElementById('kpi-aov').textContent = `$${Number(metrics.avg_order_value).toFixed(2)}`;
+                document.getElementById('kpi-customers').textContent = metrics.unique_customers;
+                document.getElementById('kpi-units').textContent = metrics.units_sold;
+            }
+
+            async function loadChart(period) {
+                const response = await fetch(`/api/admin/revenue-chart?period=${encodeURIComponent(period)}`);
+                const chartData = await response.json();
+
+                if (chartInstance) {
+                    chartInstance.destroy();
+                }
+                chartInstance = new Chart(ctx.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: chartData.labels,
+                        datasets: [{
+                            label: 'Revenue ($)', data: chartData.data, borderColor: '#5AB9B4',
+                            backgroundColor: gradient, borderWidth: 3, pointBackgroundColor: '#fff',
+                            pointBorderColor: '#5AB9B4', pointBorderWidth: 2, pointRadius: 4, fill: true, tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: true, grid: { borderDash: [5, 5] }, border: { display: false } },
+                            x: { grid: { display: false }, border: { display: false } }
+                        }
+                    }
+                });
+            }
+
+            async function refreshOverview(period) {
+                title.textContent = periodTitles[period] || 'Revenue Trends';
+                await Promise.all([loadKpis(period), loadChart(period)]);
+            }
+
+            try {
+                await refreshOverview(periodSelect.value || '7d');
+                periodSelect.addEventListener('change', async (e) => {
+                    await refreshOverview(e.target.value);
+                });
+            } catch(e) { console.error("Failed to load chart data:", e); }
+        });
+    </script>
+    {% endif %}
+
+</body>
+</html>

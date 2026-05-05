@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - PetNest</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md relative">
+        <a href="/" class="absolute top-4 left-4 text-gray-400 hover:text-[#5AB9B4] transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+        </a>
+        <div class="text-center mb-6 mt-2">
+            <h1 class="text-2xl font-bold text-[#2C3E50]">Welcome Back</h1>
+            <p class="text-sm text-gray-500 mt-1">Please enter your details to sign in.</p>
+        </div>
+        <form id="login-form" class="space-y-5">
+            <div><label class="block text-sm font-medium text-gray-700">Email Address</label><input type="email" id="email" required class="mt-1 w-full px-4 py-2 bg-gray-50 border rounded-lg focus:ring-[#5AB9B4] outline-none"></div>
+            <div><label class="block text-sm font-medium text-gray-700">Password</label><input type="password" id="password" required class="mt-1 w-full px-4 py-2 bg-gray-50 border rounded-lg focus:ring-[#5AB9B4] outline-none"></div>
+            <p id="message-box" class="text-sm text-center hidden"></p>
+            <button type="submit" class="w-full bg-[#5AB9B4] text-white font-semibold py-2.5 rounded-lg hover:bg-[#4a9c98] transition-colors shadow-md">Sign In</button>
+        </form>
+        <div class="mt-6 text-center text-sm text-gray-500">
+            Don't have an account? <a href="/signup" class="text-[#5AB9B4] font-semibold hover:underline">Sign up</a>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/login.js') }}"></script>
+</body>
+</html>

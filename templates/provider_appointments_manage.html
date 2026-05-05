@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Provider Appointments - PetNest</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gray-100 font-['Poppins'] min-h-screen">
+    <div class="max-w-6xl mx-auto p-4 md:p-8">
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-bold text-[#2C3E50]">Manage Appointments</h1>
+                <p class="text-sm text-gray-500 mt-1">Bookings from customers for your listed services.</p>
+            </div>
+            <a href="/user/{{ user_id }}/provider/services" class="text-sm font-semibold text-[#5AB9B4] hover:underline">Back to Manage Services</a>
+        </div>
+
+        <div class="bg-white border border-gray-100 rounded-2xl overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="text-left text-xs uppercase tracking-wider text-gray-500 border-b border-gray-100">
+                            <th class="p-4">Date</th>
+                            <th class="p-4">Serial</th>
+                            <th class="p-4">Time</th>
+                            <th class="p-4">Customer</th>
+                            <th class="p-4">Service</th>
+                            <th class="p-4">Status</th>
+                            <th class="p-4">Note</th>
+                            <th class="p-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for a in appointments %}
+                        <tr class="border-b border-gray-50 hover:bg-gray-50">
+                            <td class="p-4 text-gray-600">{{ a.AppointmentDate }}</td>
+                            <td class="p-4 font-semibold text-[#2C3E50]">#{{ a.SerialNo }}</td>
+                            <td class="p-4 text-gray-600">{{ a.SlotStart }} - {{ a.SlotEnd }}</td>
+                            <td class="p-4 text-gray-700">
+                                <p class="font-semibold">{{ a.CustomerName }}</p>
+                                <p class="text-xs text-gray-500">{{ a.CustomerPhone or 'No phone' }}</p>
+                            </td>
+                            <td class="p-4 text-gray-600">{{ a.ServiceName }}</td>
+                            <td class="p-4 text-gray-600">{{ a.Status }}</td>
+                            <td class="p-4 text-gray-600">{{ a.CustomerNote or '-' }}</td>
+                            <td class="p-4">
+                                {% if a.Status not in ('Completed', 'Cancelled') %}
+                                <form method="post" action="/user/{{ user_id }}/provider/appointments/{{ a.AppointmentID }}/complete" class="inline">
+                                    <button type="submit" class="text-xs font-semibold text-white bg-[#5AB9B4] hover:bg-[#4aa39f] px-3 py-1.5 rounded-lg">Mark done</button>
+                                </form>
+                                {% else %}
+                                <span class="text-xs text-gray-400">—</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% if not appointments %}
+                        <tr><td colspan="8" class="p-10 text-center text-gray-500">No appointments yet.</td></tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

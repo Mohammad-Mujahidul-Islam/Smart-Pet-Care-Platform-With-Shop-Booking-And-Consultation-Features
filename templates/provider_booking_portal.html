@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book service - PetNest</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gray-100 font-['Poppins'] min-h-screen">
+    <div class="max-w-3xl mx-auto p-4 md:p-8">
+        <div class="flex items-center justify-between mb-6">
+            <h1 class="text-2xl font-bold text-[#2C3E50]">Book service</h1>
+            <a href="/user/{{ user_id }}/service-providers" class="text-sm font-semibold text-[#5AB9B4] hover:underline">Back to providers</a>
+        </div>
+
+        <div class="bg-white border border-gray-100 rounded-2xl p-6 mb-6">
+            <p class="text-sm text-gray-600">Provider: <span class="font-semibold text-[#2C3E50]">{{ provider.BusinessName or provider.Name }}</span>
+                <span class="text-gray-400">({{ provider.ServiceType or 'Services' }})</span>
+            </p>
+            <p class="text-sm text-gray-600 mt-1">Animal focus: <span class="font-semibold text-[#2C3E50]">{{ provider.AnimalExpertise or 'General' }}</span></p>
+            <p class="text-sm text-gray-600 mt-1">Service: <span class="font-semibold text-[#2C3E50]">{{ service.ServiceName }}</span> | Fee: ${{ service.Price }}</p>
+            <p class="text-sm text-gray-600 mt-1">Hours: <span class="font-semibold text-[#2C3E50]">9:00 AM - 8:00 PM</span> (default)</p>
+        </div>
+
+        <div class="bg-white border border-gray-100 rounded-2xl p-6">
+            {% if next_available %}
+            <div class="mb-4 p-4 rounded-lg bg-[#E8F6F5] text-sm text-[#2C3E50]">
+                <p><span class="font-bold">Next available day:</span> {{ next_available.appointment_date }}</p>
+                <p><span class="font-bold">Serial:</span> {{ next_available.serial_no }}</p>
+                <p><span class="font-bold">Estimated time:</span> {{ next_available.slot_start }} - {{ next_available.slot_end }}</p>
+                <p class="text-xs text-gray-600 mt-1">The next open slot is assigned automatically.</p>
+            </div>
+            {% endif %}
+            <form method="POST" class="space-y-4">
+                <div>
+                    <label class="text-xs font-bold text-gray-500 uppercase">Note (optional)</label>
+                    <textarea name="note" rows="3" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-[#5AB9B4] mt-1" placeholder="Pet name, special needs, etc."></textarea>
+                </div>
+                <button type="submit" class="w-full bg-[#5AB9B4] text-white py-2.5 rounded-lg text-sm font-bold hover:bg-[#4a9c98] transition-colors">Book next available slot</button>
+            </form>
+            {% if message %}
+            <div class="mt-4 text-sm font-semibold {% if message_type == 'error' %}text-red-600{% else %}text-green-600{% endif %}">
+                {{ message }}
+            </div>
+            {% endif %}
+            {% if booking_summary %}
+            <div class="mt-4 p-4 rounded-lg bg-[#E8F6F5] text-sm text-[#2C3E50]">
+                <p><span class="font-bold">Serial:</span> {{ booking_summary.serial_no }}</p>
+                <p><span class="font-bold">Date:</span> {{ booking_summary.appointment_date }}</p>
+                <p><span class="font-bold">Time:</span> {{ booking_summary.slot_start }} - {{ booking_summary.slot_end }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

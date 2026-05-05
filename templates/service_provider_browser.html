@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Providers - PetNest</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gray-100 font-['Poppins'] min-h-screen">
+    <div class="max-w-6xl mx-auto p-4 md:p-8">
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-bold text-[#2C3E50]">Service Providers</h1>
+                <p class="text-sm text-gray-500 mt-1">Grooming, daycare, training, and more &mdash; filter by service type and pet expertise.</p>
+            </div>
+            <a href="{% if user_id %}/user/{{ user_id }}{% else %}/{% endif %}" class="text-sm font-semibold text-[#5AB9B4] hover:underline">Back</a>
+        </div>
+
+        <form method="GET" action="{% if user_id %}/user/{{ user_id }}/service-providers{% else %}/service-providers{% endif %}" class="bg-white border border-gray-100 rounded-xl p-4 mb-6 grid grid-cols-1 md:grid-cols-4 gap-3">
+            <select name="service_type" class="border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-[#5AB9B4]">
+                <option value="">All service types</option>
+                {% for t in provider_types %}
+                <option value="{{ t }}" {% if service_type == t %}selected{% endif %}>{{ t }}</option>
+                {% endfor %}
+            </select>
+            <select name="pet_type" class="border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-[#5AB9B4]">
+                <option value="">All pet types</option>
+                <option value="Cat" {% if pet_type == 'Cat' %}selected{% endif %}>Cat</option>
+                <option value="Dog" {% if pet_type == 'Dog' %}selected{% endif %}>Dog</option>
+                <option value="Bird" {% if pet_type == 'Bird' %}selected{% endif %}>Bird</option>
+                <option value="Fish" {% if pet_type == 'Fish' %}selected{% endif %}>Fish</option>
+                <option value="Small Pet" {% if pet_type == 'Small Pet' %}selected{% endif %}>Small Pet</option>
+                <option value="Reptilian" {% if pet_type == 'Reptilian' %}selected{% endif %}>Reptilian</option>
+            </select>
+            <input type="text" name="expertise" value="{{ expertise }}" placeholder="Search name or keywords" class="border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-[#5AB9B4]">
+            <button type="submit" class="bg-[#5AB9B4] text-white rounded-lg px-4 py-2 text-sm font-bold hover:bg-[#4a9c98] transition-colors">Search</button>
+        </form>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {% for p in providers %}
+            <div class="bg-white border border-gray-100 rounded-xl p-5">
+                <p class="text-xs font-bold uppercase text-[#5AB9B4]">Provider #{{ p.UserID }} · {{ p.ServiceType or 'Services' }}</p>
+                <h2 class="text-lg font-bold text-[#2C3E50] mt-1">{{ p.BusinessName or p.Name }}</h2>
+                <p class="text-sm text-gray-600">Contact: {{ p.Name }} · {{ p.Phone or 'Not provided' }}</p>
+                <p class="text-sm text-gray-600 mt-1">Animal focus: <span class="font-semibold text-[#2C3E50]">{{ p.AnimalExpertise or 'General' }}</span></p>
+                <p class="text-sm text-gray-600">Location: {{ p.Location or '—' }}</p>
+                <div class="mt-3">
+                    <p class="text-xs font-bold text-gray-500 uppercase">Listed services</p>
+                    {% if p.ServiceList %}
+                        {% for item in p.ServiceList.split(' || ') %}
+                        <p class="text-sm text-gray-700 mt-1">• {{ item }}</p>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-sm text-gray-500 mt-1">No active listings yet. Ask the provider to add a service in their dashboard.</p>
+                    {% endif %}
+                </div>
+                {% if user_id %}
+                <a href="/user/{{ user_id }}/service-provider/{{ p.UserID }}/book" class="mt-4 inline-block bg-[#5AB9B4] text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-[#4a9c98] transition-colors">Book service</a>
+                {% else %}
+                <a href="/login" class="mt-4 inline-block bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-gray-900 transition-colors">Sign in to book</a>
+                {% endif %}
+            </div>
+            {% endfor %}
+            {% if not providers %}
+            <div class="col-span-full bg-white border border-gray-100 rounded-xl p-10 text-center text-gray-500">
+                No service providers found for the selected filters.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

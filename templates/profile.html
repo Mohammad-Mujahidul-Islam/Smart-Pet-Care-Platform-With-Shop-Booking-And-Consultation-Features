@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Settings - PetNest</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen p-8 font-['Poppins']">
+    <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-md p-8 relative">
+        <a href="/user/{{ user.UserID }}" class="absolute top-6 left-6 text-gray-400 hover:text-[#5AB9B4] transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+        </a>
+        <h1 class="text-2xl font-bold text-center text-[#2C3E50] mb-8">Account Settings</h1>
+        <form action="#" method="POST" class="space-y-5">
+            {% if message %}
+                <div class="p-3 rounded-lg text-sm font-semibold text-center {% if message_type == 'success' %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %}">{{ message }}</div>
+            {% endif %}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div><label class="block text-sm font-medium text-gray-700">Display Name</label><input type="text" name="name" value="{{ user.Name }}" class="mt-1 w-full px-4 py-2 bg-gray-50 border rounded-lg focus:ring-[#5AB9B4] outline-none"></div>
+                <div><label class="block text-sm font-medium text-gray-700">Email Address</label><input type="email" name="email" value="{{ user.Email }}" class="mt-1 w-full px-4 py-2 bg-gray-50 border rounded-lg focus:ring-[#5AB9B4] outline-none"></div>
+                <div><label class="block text-sm font-medium text-gray-700">Phone Number</label><input type="text" name="phone" value="{{ user.Phone }}" class="mt-1 w-full px-4 py-2 bg-gray-50 border rounded-lg focus:ring-[#5AB9B4] outline-none"></div>
+                <div><label class="block text-sm font-medium text-gray-700">Account Role</label><input type="text" value="{{ user.Role }}" disabled class="mt-1 w-full px-4 py-2 bg-gray-200 border rounded-lg text-gray-500 cursor-not-allowed"></div>
+            </div>
+            <div class="border-t border-gray-200 my-6"></div>
+            <div class="bg-red-50 p-4 rounded-xl border border-red-100">
+                <h3 class="text-sm font-bold text-red-800 mb-2">Confirm Changes</h3>
+                <p class="text-xs text-red-600 mb-3">Please enter your current password to save any changes.</p>
+                <input type="password" name="confirm_password" placeholder="Current Password" required class="w-full px-4 py-2 bg-white border border-red-200 rounded-lg focus:ring-red-400 outline-none">
+            </div>
+            <button type="submit" class="w-full bg-[#2C3E50] text-white font-semibold py-3 rounded-xl hover:bg-[#1a252f] transition-colors mt-6 shadow-md">Update Information</button>
+        </form>
+    </div>
+</body>
+</html>

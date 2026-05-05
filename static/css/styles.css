@@ -1,0 +1,37 @@
+/* Custom CSS for PetNest */
+body {
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Hide scrollbar for category scroll */
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Horizontal category strip: momentum scroll on iOS, reliable sideways pan */
+.shop-pet-scroll {
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x;
+}
+
+.shop-pet-scroll.shop-pet-pulling,
+.shop-pet-scroll.shop-pet-pulling * {
+    user-select: none;
+}
+
+.shop-pet-scroll.shop-pet-pulling {
+    cursor: grabbing;
+    scroll-behavior: auto;
+    touch-action: none;
+}
+
+/* Stop Chrome/Edge “link drag ghost” during horizontal pull */
+#shop-pet-categories-scroll a,
+#shop-pet-categories-scroll img {
+    -webkit-user-drag: none;
+    user-drag: none;
+}
