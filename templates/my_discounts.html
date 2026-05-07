@@ -12,10 +12,10 @@
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <div class="p-6 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
                 <div>
-                    <h1 class="text-2xl font-bold text-[#2C3E50]">My Discounts</h1>
+                    <h1 class="text-2xl font-bold text-emerald-900">My Discounts</h1>
                     <p class="text-sm text-gray-500 mt-1">Available offers for {{ user.Name }}</p>
                 </div>
-                <a href="/user/{{ user.UserID }}" class="text-sm font-semibold text-[#5AB9B4] hover:underline">Back to Home</a>
+                <a href="/user/{{ user.UserID }}" class="text-sm font-semibold text-emerald-600 hover:underline">Back to Home</a>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
@@ -32,8 +32,8 @@
                     <tbody class="text-sm">
                         {% for d in discounts %}
                         <tr class="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                            <td class="p-4 font-bold text-[#2C3E50]">{{ d.OfferCode }}</td>
-                            <td class="p-4 text-[#2C3E50]">{{ d.DiscountPercent }}%</td>
+                            <td class="p-4 font-bold text-emerald-900">{{ d.OfferCode }}</td>
+                            <td class="p-4 text-emerald-900">{{ d.DiscountPercent }}%</td>
                             <td class="p-4 text-gray-600">{{ d.AppliesToCategory or 'All categories' }}</td>
                             <td class="p-4 text-gray-600">
                                 {% if d.RemainingUserUses is none %}Unlimited{% else %}{{ d.RemainingUserUses }}{% endif %}

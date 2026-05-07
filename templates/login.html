@@ -10,7 +10,7 @@
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
     <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md relative">
-        <a href="/" class="absolute top-4 left-4 text-gray-400 hover:text-[#5AB9B4] transition-colors">
+        <a href="/" class="absolute top-4 left-4 text-gray-400 hover:text-teal-500 transition-colors">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
         </a>
         <div class="text-center mb-6 mt-2">
@@ -18,13 +18,13 @@
             <p class="text-sm text-gray-500 mt-1">Please enter your details to sign in.</p>
         </div>
         <form id="login-form" class="space-y-5">
-            <div><label class="block text-sm font-medium text-gray-700">Email Address</label><input type="email" id="email" required class="mt-1 w-full px-4 py-2 bg-gray-50 border rounded-lg focus:ring-[#5AB9B4] outline-none"></div>
-            <div><label class="block text-sm font-medium text-gray-700">Password</label><input type="password" id="password" required class="mt-1 w-full px-4 py-2 bg-gray-50 border rounded-lg focus:ring-[#5AB9B4] outline-none"></div>
+            <div><label class="block text-sm font-medium text-gray-700">Email Address</label><input type="email" id="email" required class="mt-1 w-full px-4 py-2 bg-gray-50 border rounded-lg focus:ring-teal-500 outline-none"></div>
+            <div><label class="block text-sm font-medium text-gray-700">Password</label><input type="password" id="password" required class="mt-1 w-full px-4 py-2 bg-gray-50 border rounded-lg focus:ring-teal-500 outline-none"></div>
             <p id="message-box" class="text-sm text-center hidden"></p>
-            <button type="submit" class="w-full bg-[#5AB9B4] text-white font-semibold py-2.5 rounded-lg hover:bg-[#4a9c98] transition-colors shadow-md">Sign In</button>
+            <button type="submit" class="w-full bg-gradient-to-r from-green-400 to-blue-500 text-white font-semibold py-2.5 rounded-lg hover:from-green-500 hover:to-blue-600 transition-colors shadow-md">Sign In</button>
         </form>
         <div class="mt-6 text-center text-sm text-gray-500">
-            Don't have an account? <a href="/signup" class="text-[#5AB9B4] font-semibold hover:underline">Sign up</a>
+            Don't have an account? <a href="/signup" class="text-teal-500 font-semibold hover:underline">Sign up</a>
         </div>
     </div>
     <script src="{{ url_for('static', filename='js/login.js') }}"></script>

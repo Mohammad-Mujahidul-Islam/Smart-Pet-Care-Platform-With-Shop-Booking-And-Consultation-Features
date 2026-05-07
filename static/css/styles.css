@@ -1,6 +1,23 @@
-/* Custom CSS for PetNest */
+/* Professional Design System for PetNest */
+:root {
+    --primary: #10b981; /* Emerald 500 */
+    --primary-hover: #059669; /* Emerald 600 */
+    --secondary: #3b82f6; /* Blue 500 */
+    --accent: #0ea5e9;
+    --background: #f8fafc;
+    --surface: #ffffff;
+    --text-main: #0f172a;
+    --text-muted: #475569;
+    --border: #e2e8f0;
+    --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
 body {
     font-family: 'Poppins', sans-serif;
+    color: var(--text-main);
+    background-color: var(--background);
+    line-height: 1.5;
 }
 
 /* Hide scrollbar for category scroll */
@@ -34,4 +51,45 @@ body {
 #shop-pet-categories-scroll img {
     -webkit-user-drag: none;
     user-drag: none;
+}
+
+/* Smooth Transitions */
+.transition-all {
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 200ms;
+}
+
+/* Card Styling */
+.product-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    transition: all 0.3s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary);
+}
+
+/* Button Styling */
+.btn-primary {
+    background: linear-gradient(to right, #4ade80, #3b82f6);
+    color: white;
+    padding: 0.625rem 1.25rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+/* Custom Gradients */
+.bg-gradient-premium {
+    background: linear-gradient(135deg, #f8fafc 0%, #dcfce7 100%);
 }

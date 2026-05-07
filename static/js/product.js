@@ -17,8 +17,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (addToCartBtn) {
             addToCartBtn.disabled = true;
             addToCartBtn.innerHTML = "Out of Stock";
-            addToCartBtn.classList.replace("text-[#5AB9B4]", "text-gray-400");
-            addToCartBtn.classList.replace("border-[#5AB9B4]", "border-gray-300");
+            addToCartBtn.classList.replace("text-teal-500", "text-gray-400");
+            addToCartBtn.classList.replace("border-teal-500", "border-gray-300");
         }
     }
 

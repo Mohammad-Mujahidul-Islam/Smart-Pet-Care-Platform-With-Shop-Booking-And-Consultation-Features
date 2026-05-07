@@ -11,14 +11,14 @@
     <div class="max-w-6xl mx-auto p-4 md:p-8">
         <div class="flex items-center justify-between mb-6">
             <div>
-                <h1 class="text-2xl md:text-3xl font-bold text-[#2C3E50]">Vet System</h1>
+                <h1 class="text-2xl md:text-3xl font-bold text-emerald-900">Vet System</h1>
                 <p class="text-sm text-gray-500 mt-1">Browse available vets by pet type and expertise.</p>
             </div>
-            <a href="{% if user_id %}/user/{{ user_id }}{% else %}/{% endif %}" class="text-sm font-semibold text-[#5AB9B4] hover:underline">Back</a>
+            <a href="{% if user_id %}/user/{{ user_id }}{% else %}/{% endif %}" class="text-sm font-semibold text-emerald-600 hover:underline">Back</a>
         </div>
 
         <form method="GET" action="{% if user_id %}/user/{{ user_id }}/vets{% else %}/vets{% endif %}" class="bg-white border border-gray-100 rounded-xl p-4 mb-6 grid grid-cols-1 md:grid-cols-3 gap-3">
-            <select name="pet_type" class="border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-[#5AB9B4]">
+            <select name="pet_type" class="border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-emerald-500">
                 <option value="">All Pet Types</option>
                 <option value="Cat" {% if pet_type == 'Cat' %}selected{% endif %}>Cat</option>
                 <option value="Dog" {% if pet_type == 'Dog' %}selected{% endif %}>Dog</option>
@@ -28,14 +28,14 @@
                 <option value="Reptilian" {% if pet_type == 'Reptilian' %}selected{% endif %}>Reptilian</option>
                 <option value="Insect" {% if pet_type == 'Insect' %}selected{% endif %}>Insect</option>
             </select>
-            <input type="text" name="expertise" value="{{ expertise }}" placeholder="Search expertise (e.g. surgery, skin, cat)" class="border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-[#5AB9B4]">
-            <button type="submit" class="bg-[#5AB9B4] text-white rounded-lg px-4 py-2 text-sm font-bold hover:bg-[#4a9c98] transition-colors">Search Vet</button>
+            <input type="text" name="expertise" value="{{ expertise }}" placeholder="Search expertise (e.g. surgery, skin, cat)" class="border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-emerald-500">
+            <button type="submit" class="bg-emerald-600 text-white rounded-lg px-4 py-2 text-sm font-bold hover:bg-emerald-700 transition-colors">Search Vet</button>
         </form>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             {% for v in vets %}
             <div class="bg-white border border-gray-100 rounded-xl p-5">
-                <h2 class="text-lg font-bold text-[#2C3E50]">{{ v.Name }}</h2>
+                <h2 class="text-lg font-bold text-emerald-900">{{ v.Name }}</h2>
                 <p class="text-sm text-gray-600 mt-1">Clinic: {{ v.ClinicName or 'N/A' }}</p>
                 <p class="text-sm text-gray-600">Specialization: {{ v.Specialization or 'General' }}</p>
                 <p class="text-sm text-gray-600">Experience: {{ v.ExperienceYears or 0 }} years</p>
@@ -52,7 +52,7 @@
                     {% endif %}
                 </div>
                 {% if user_id %}
-                <a href="/user/{{ user_id }}/vet/{{ v.UserID }}/book" class="mt-4 inline-block bg-[#5AB9B4] text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-[#4a9c98] transition-colors">Book Appointment</a>
+                <a href="/user/{{ user_id }}/vet/{{ v.UserID }}/book" class="mt-4 inline-block bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-emerald-700 transition-colors">Book Appointment</a>
                 {% else %}
                 <a href="/login" class="mt-4 inline-block bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-gray-900 transition-colors">Sign in to Book</a>
                 {% endif %}

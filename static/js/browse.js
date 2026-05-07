@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Set the page title
     if (title) {
-        if (query) title.innerHTML = `Results for <span class="italic text-[#5AB9B4]">"${query}"</span>`;
+        if (query) title.innerHTML = `Results for <span class="italic text-teal-500">"${query}"</span>`;
         else if (selectedCategories.length === 1) title.innerHTML = `${selectedCategories[0]} Category`;
         else if (selectedCategories.length > 1) title.innerHTML = `Categories: ${selectedCategories.join(', ')}`;
         else title.innerHTML = "All Products";
@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <h3 class="text-base md:text-lg font-bold text-[#2C3E50] truncate">${pet.Name}</h3>
                     <p class="text-xs text-gray-500 mt-1">Seller: ${seller}</p>
                     <p class="text-xs text-gray-500 mt-1">Qty: ${stockLabel}</p>
-                    <p class="text-lg md:text-xl font-bold text-[#5AB9B4] mt-2">$${pet.Price}</p>
+                    <p class="text-lg md:text-xl font-bold text-teal-500 mt-2">$${pet.Price}</p>
                 </div>
             </a>`;
             container.innerHTML += petCard;

@@ -31,12 +31,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 const stockLabel = pet.StockQuantity > 0 ? `${pet.StockQuantity} in stock` : 'Out of stock';
                 
                 const petCard = `
-                <a href="${productLink}" class="bg-white rounded-2xl shadow-sm border overflow-hidden flex flex-col cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 block">
-                    <div class="p-3 md:p-4">
-                        <p class="text-xs text-gray-500">${pet.PetCategory || 'General'} • Seller: ${seller}</p>
-                        <h3 class="text-sm md:text-base font-bold text-[#2C3E50] truncate">${pet.Name}</h3>
-                        <p class="text-xs text-gray-500 mt-1">Qty: ${stockLabel}</p>
-                        <p class="text-sm md:text-base font-bold text-[#5AB9B4] mt-2">$${pet.Price}</p>
+                <a href="${productLink}" class="group bg-white rounded-2xl border border-slate-100 overflow-hidden flex flex-col cursor-pointer hover:shadow-2xl hover:shadow-indigo-500/10 hover:-translate-y-1.5 transition-all duration-500 block">
+                    <div class="aspect-square bg-slate-50 relative overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=300&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                        <div class="absolute top-3 left-3 bg-white/90 backdrop-blur px-2 py-1 rounded-lg text-[10px] font-bold text-slate-600 uppercase tracking-wider border border-slate-100 shadow-sm">${pet.PetCategory || 'General'}</div>
+                    </div>
+                    <div class="p-4 flex flex-col flex-1">
+                        <p class="text-[10px] font-bold text-indigo-500 uppercase tracking-widest mb-1">${seller}</p>
+                        <h3 class="text-sm font-bold text-slate-800 line-clamp-2 leading-snug group-hover:text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-500 transition-colors">${pet.Name}</h3>
+                        <div class="mt-auto pt-4 flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-slate-400 font-medium">${stockLabel}</p>
+                                <p class="text-lg font-extrabold text-slate-900">$${pet.Price}</p>
+                            </div>
+                            <div class="w-8 h-8 bg-slate-900 rounded-full flex items-center justify-center text-white group-hover:bg-gradient-to-r from-green-400 to-blue-500 transition-colors shadow-lg">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                            </div>
+                        </div>
                     </div>
                 </a>`;
                 container.innerHTML += petCard;
@@ -80,6 +91,30 @@ document.addEventListener('DOMContentLoaded', () => {
         let dragActive = false;
         let suppressNextClick = false;
 
+        const onPointerMove = (e) => {
+            if (e.pointerId !== activePointerId) return;
+            const dx = e.clientX - startClientX;
+            if (!dragActive && Math.abs(dx) >= DRAG_THRESHOLD) {
+                dragActive = true;
+            }
+            if (dragActive) {
+                strip.scrollLeft = startScrollLeft - dx;
+            }
+        };
+
+        const onPointerUp = (e) => {
+            if (e.pointerId !== activePointerId) return;
+            strip.classList.remove('shop-pet-pulling');
+            if (dragActive) {
+                suppressNextClick = true;
+            }
+            activePointerId = null;
+            dragActive = false;
+            window.removeEventListener('pointermove', onPointerMove);
+            window.removeEventListener('pointerup', onPointerUp);
+            window.removeEventListener('pointercancel', onPointerUp);
+        };
+
         strip.addEventListener('pointerdown', (e) => {
             if (e.pointerType === 'mouse' && e.button !== 0) return;
             activePointerId = e.pointerId;
@@ -88,48 +123,11 @@ document.addEventListener('DOMContentLoaded', () => {
             dragActive = false;
             suppressNextClick = false;
             strip.classList.add('shop-pet-pulling');
-            try {
-                strip.setPointerCapture(e.pointerId);
-            } catch (_) {
-                /* noop */
-            }
+            
+            window.addEventListener('pointermove', onPointerMove);
+            window.addEventListener('pointerup', onPointerUp);
+            window.addEventListener('pointercancel', onPointerUp);
         });
-
-        strip.addEventListener(
-            'pointermove',
-            (e) => {
-                if (e.pointerId !== activePointerId) return;
-                const dx = e.clientX - startClientX;
-                if (!dragActive && Math.abs(dx) >= DRAG_THRESHOLD) {
-                    dragActive = true;
-                }
-                if (dragActive) {
-                    e.preventDefault();
-                    strip.scrollLeft = startScrollLeft - dx;
-                }
-            },
-            { passive: false }
-        );
-
-        function finishPointerDrag(e) {
-            if (e.pointerId !== activePointerId) return;
-            try {
-                if (typeof strip.hasPointerCapture === 'function' && strip.hasPointerCapture(e.pointerId)) {
-                    strip.releasePointerCapture(e.pointerId);
-                }
-            } catch (_) {
-                /* noop */
-            }
-            strip.classList.remove('shop-pet-pulling');
-            if (dragActive) {
-                suppressNextClick = true;
-            }
-            activePointerId = null;
-            dragActive = false;
-        }
-
-        strip.addEventListener('pointerup', finishPointerDrag);
-        strip.addEventListener('pointercancel', finishPointerDrag);
 
         strip.addEventListener(
             'click',
@@ -203,14 +201,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
 
                     const categories = [...new Set(pets.map(p => p.PetCategory))];
-                    let dropdownHTML = `<div class="px-5 py-3"><span class="text-xs font-bold text-gray-500">Search suggestions for <span class="text-[#5AB9B4]">${query}</span></span></div>`;
+                    let dropdownHTML = `<div class="px-5 py-3"><span class="text-xs font-bold text-gray-500">Search suggestions for <span class="text-teal-500">${query}</span></span></div>`;
 
                     categories.forEach(cat => {
                         const basePath = userId ? `/user/${userId}/browse` : '/browse';
                         dropdownHTML += `
                             <a href="${basePath}?category=${encodeURIComponent(cat)}" class="px-5 py-1.5 hover:bg-gray-50 cursor-pointer flex justify-between items-center group transition-colors block">
-                                <span class="text-sm text-gray-600 group-hover:text-[#5AB9B4] capitalize">
-                                    <span class="text-[#5AB9B4] font-medium">${query}</span> in ${cat}
+                                <span class="text-sm text-gray-600 group-hover:text-teal-500 capitalize">
+                                    <span class="text-teal-500 font-medium">${query}</span> in ${cat}
                                 </span>
                             </a>`;
                     });
@@ -485,12 +483,12 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <div class="flex items-center border border-gray-300 rounded-lg bg-white shadow-sm w-fit">
                                     <button onclick="updateCartItem(${userId}, ${item.ProductID}, 'decrease')" class="px-3 py-1 text-gray-600 hover:bg-gray-100 hover:text-red-500 rounded-l-lg transition-colors cursor-pointer font-bold">-</button>
                                     <span class="px-4 py-1 text-sm font-semibold text-[#2C3E50] border-x border-gray-300">${item.Quantity}</span>
-                                    <button onclick="updateCartItem(${userId}, ${item.ProductID}, 'increase')" class="px-3 py-1 text-gray-600 hover:bg-gray-100 hover:text-[#5AB9B4] rounded-r-lg transition-colors cursor-pointer font-bold">+</button>
+                                    <button onclick="updateCartItem(${userId}, ${item.ProductID}, 'increase')" class="px-3 py-1 text-gray-600 hover:bg-gray-100 hover:text-teal-500 rounded-r-lg transition-colors cursor-pointer font-bold">+</button>
                                 </div>
                             </div>
                             
                         </div>
-                        <p class="font-bold text-[#5AB9B4]">$${(item.Price * item.Quantity).toFixed(2)}</p>
+                        <p class="font-bold text-teal-500">$${(item.Price * item.Quantity).toFixed(2)}</p>
                     </div>
                 `;
             });

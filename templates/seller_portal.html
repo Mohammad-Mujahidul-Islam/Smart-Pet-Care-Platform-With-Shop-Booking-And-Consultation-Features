@@ -11,35 +11,35 @@
     <div class="max-w-7xl mx-auto p-4 md:p-8">
         <div class="flex items-center justify-between mb-6">
             <div>
-                <h1 class="text-2xl md:text-3xl font-bold text-[#2C3E50]">Seller Dashboard</h1>
+                <h1 class="text-2xl md:text-3xl font-bold text-emerald-900">Seller Dashboard</h1>
                 <p class="text-sm text-gray-500 mt-1">Welcome, {{ user.Name }}. Manage your own products and sales.</p>
             </div>
-            <a href="/user/{{ user_id }}" class="text-sm font-semibold text-[#5AB9B4] hover:underline">Back to Store</a>
+            <a href="/user/{{ user_id }}" class="text-sm font-semibold text-emerald-600 hover:underline">Back to Store</a>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             <div class="bg-white border border-gray-100 rounded-xl p-4">
                 <p class="text-xs uppercase font-bold text-gray-400">Total Orders</p>
-                <p class="text-2xl font-bold text-[#2C3E50] mt-1">{{ total_orders }}</p>
+                <p class="text-2xl font-bold text-emerald-900 mt-1">{{ total_orders }}</p>
             </div>
             <div class="bg-white border border-gray-100 rounded-xl p-4">
                 <p class="text-xs uppercase font-bold text-gray-400">Units Sold</p>
-                <p class="text-2xl font-bold text-[#2C3E50] mt-1">{{ units_sold }}</p>
+                <p class="text-2xl font-bold text-emerald-900 mt-1">{{ units_sold }}</p>
             </div>
             <div class="bg-white border border-gray-100 rounded-xl p-4">
                 <p class="text-xs uppercase font-bold text-gray-400">Gross Revenue</p>
-                <p class="text-2xl font-bold text-[#2C3E50] mt-1">${{ '%.2f'|format(gross_revenue) }}</p>
+                <p class="text-2xl font-bold text-emerald-900 mt-1">${{ '%.2f'|format(gross_revenue) }}</p>
             </div>
         </div>
         <div class="mb-6">
-            <button id="sales-details-toggle" type="button" class="text-xs font-bold px-3 py-2 rounded-lg border border-[#5AB9B4] text-[#2C7873] bg-white hover:bg-[#E8F6F5] transition-colors">
+            <button id="sales-details-toggle" type="button" class="text-xs font-bold px-3 py-2 rounded-lg border border-emerald-500 text-emerald-700 bg-white hover:bg-emerald-50 transition-colors">
                 Details
             </button>
         </div>
 
         <div id="sales-details-panel" class="bg-white border border-gray-100 rounded-2xl overflow-hidden mb-6 hidden">
             <div class="px-4 md:px-6 py-4 border-b border-gray-100 bg-gray-50">
-                <h2 class="font-bold text-[#2C3E50]">Sales Details Over Time</h2>
+                <h2 class="font-bold text-emerald-900">Sales Details Over Time</h2>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-sm">
@@ -58,11 +58,11 @@
                         {% for row in sales_details %}
                         <tr class="border-b border-gray-50 hover:bg-gray-50">
                             <td class="p-4 text-gray-600">{{ row.OrderDate }}</td>
-                            <td class="p-4 font-semibold text-[#2C3E50]">#{{ row.OrderID }}</td>
+                            <td class="p-4 font-semibold text-emerald-900">#{{ row.OrderID }}</td>
                             <td class="p-4 text-gray-700">{{ row.ProductName }}</td>
                             <td class="p-4 text-gray-600">{{ row.Quantity }}</td>
                             <td class="p-4 text-gray-600">${{ row.PriceAtPurchase }}</td>
-                            <td class="p-4 font-semibold text-[#2C3E50]">${{ row.LineTotal }}</td>
+                            <td class="p-4 font-semibold text-emerald-900">${{ row.LineTotal }}</td>
                             <td class="p-4 text-gray-600">{{ row.OrderStatus }}</td>
                         </tr>
                         {% endfor %}
@@ -78,11 +78,11 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             <div class="bg-white border border-gray-100 rounded-2xl p-5">
-                <h2 class="font-bold text-[#2C3E50] mb-4">Add New Product</h2>
+                <h2 class="font-bold text-emerald-900 mb-4">Add New Product</h2>
                 <form method="POST" action="{{ url_for('seller_add_product', user_id=user_id) }}" class="space-y-3">
-                    <input type="text" name="name" required placeholder="Product name" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-[#5AB9B4]">
+                    <input type="text" name="name" required placeholder="Product name" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-emerald-500">
                     <div class="grid grid-cols-2 gap-3">
-                        <select name="pet_category" required class="border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-[#5AB9B4] bg-white">
+                        <select name="pet_category" required class="border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-emerald-500 bg-white">
                             <option value="">Select pet category</option>
                             <option value="Cat">Cat</option>
                             <option value="Dog">Dog</option>
@@ -92,7 +92,7 @@
                             <option value="Reptilian">Reptilian</option>
                             <option value="Insect">Insect</option>
                         </select>
-                        <select name="product_category" required class="border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-[#5AB9B4] bg-white">
+                        <select name="product_category" required class="border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-emerald-500 bg-white">
                             <option value="">Select type</option>
                             <option value="Dress">Dress</option>
                             <option value="House">House</option>
@@ -103,16 +103,16 @@
                         </select>
                     </div>
                     <div class="grid grid-cols-2 gap-3">
-                        <input type="number" step="0.01" min="0" name="price" required placeholder="Price" class="border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-[#5AB9B4]">
-                        <input type="number" min="0" name="stock_quantity" required placeholder="Stock quantity" class="border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-[#5AB9B4]">
+                        <input type="number" step="0.01" min="0" name="price" required placeholder="Price" class="border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-emerald-500">
+                        <input type="number" min="0" name="stock_quantity" required placeholder="Stock quantity" class="border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-emerald-500">
                     </div>
-                    <textarea name="description" rows="3" placeholder="Product details" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-[#5AB9B4]"></textarea>
-                    <button type="submit" class="w-full bg-[#5AB9B4] text-white py-2.5 rounded-lg text-sm font-bold hover:bg-[#4a9c98] transition-colors">Add Product to Inventory</button>
+                    <textarea name="description" rows="3" placeholder="Product details" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-emerald-500"></textarea>
+                    <button type="submit" class="w-full bg-emerald-600 text-white py-2.5 rounded-lg text-sm font-bold hover:bg-emerald-700 transition-colors">Add Product to Inventory</button>
                 </form>
             </div>
 
             <div class="bg-white border border-gray-100 rounded-2xl p-5">
-                <h2 class="font-bold text-[#2C3E50] mb-4">How It Works</h2>
+                <h2 class="font-bold text-emerald-900 mb-4">How It Works</h2>
                 <div class="text-sm text-gray-600 space-y-2">
                     <p>New products added here are saved directly in your inventory.</p>
                     <p>They are marked <span class="font-semibold text-amber-700">Pending</span> first and wait for admin approval.</p>
@@ -124,7 +124,7 @@
 
         <div class="bg-white border border-gray-100 rounded-2xl overflow-hidden">
             <div class="px-4 md:px-6 py-4 border-b border-gray-100 bg-gray-50">
-                <h2 class="font-bold text-[#2C3E50]">My Product Inventory</h2>
+                <h2 class="font-bold text-emerald-900">My Product Inventory</h2>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-sm">
@@ -141,7 +141,7 @@
                     <tbody>
                         {% for p in products %}
                         <tr class="border-b border-gray-50 hover:bg-gray-50">
-                            <td class="p-4 font-semibold text-[#2C3E50]">{{ p.Name }}</td>
+                            <td class="p-4 font-semibold text-emerald-900">{{ p.Name }}</td>
                             <td class="p-4 text-gray-600">{{ p.PetCategory or 'General' }}</td>
                             <td class="p-4 text-gray-600">${{ p.Price }}</td>
                             <td class="p-4 text-gray-600">{{ p.StockQuantity }}</td>
@@ -149,8 +149,8 @@
                             <td class="p-4">
                                 <form method="POST" action="{{ url_for('seller_restock_product', user_id=user_id) }}" class="flex items-center gap-2">
                                     <input type="hidden" name="product_id" value="{{ p.ProductID }}">
-                                    <input type="number" name="restock_quantity" min="1" required placeholder="Qty" class="w-20 border border-gray-300 rounded-lg px-2 py-1 text-xs outline-none focus:border-[#5AB9B4]">
-                                    <button type="submit" class="bg-[#2C3E50] text-white text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-[#243342] transition-colors">Add</button>
+                                    <input type="number" name="restock_quantity" min="1" required placeholder="Qty" class="w-20 border border-gray-300 rounded-lg px-2 py-1 text-xs outline-none focus:border-emerald-500">
+                                    <button type="submit" class="bg-emerald-900 text-white text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-[#243342] transition-colors">Add</button>
                                 </form>
                             </td>
                         </tr>

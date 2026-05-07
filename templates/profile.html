@@ -9,7 +9,7 @@
 </head>
 <body class="bg-gray-100 min-h-screen p-8 font-['Poppins']">
     <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-md p-8 relative">
-        <a href="/user/{{ user.UserID }}" class="absolute top-6 left-6 text-gray-400 hover:text-[#5AB9B4] transition-colors">
+        <a href="/user/{{ user.UserID }}" class="absolute top-6 left-6 text-gray-400 hover:text-teal-500 transition-colors">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
         </a>
         <h1 class="text-2xl font-bold text-center text-[#2C3E50] mb-8">Account Settings</h1>
@@ -18,9 +18,9 @@
                 <div class="p-3 rounded-lg text-sm font-semibold text-center {% if message_type == 'success' %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %}">{{ message }}</div>
             {% endif %}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div><label class="block text-sm font-medium text-gray-700">Display Name</label><input type="text" name="name" value="{{ user.Name }}" class="mt-1 w-full px-4 py-2 bg-gray-50 border rounded-lg focus:ring-[#5AB9B4] outline-none"></div>
-                <div><label class="block text-sm font-medium text-gray-700">Email Address</label><input type="email" name="email" value="{{ user.Email }}" class="mt-1 w-full px-4 py-2 bg-gray-50 border rounded-lg focus:ring-[#5AB9B4] outline-none"></div>
-                <div><label class="block text-sm font-medium text-gray-700">Phone Number</label><input type="text" name="phone" value="{{ user.Phone }}" class="mt-1 w-full px-4 py-2 bg-gray-50 border rounded-lg focus:ring-[#5AB9B4] outline-none"></div>
+                <div><label class="block text-sm font-medium text-gray-700">Display Name</label><input type="text" name="name" value="{{ user.Name }}" class="mt-1 w-full px-4 py-2 bg-gray-50 border rounded-lg focus:ring-teal-500 outline-none"></div>
+                <div><label class="block text-sm font-medium text-gray-700">Email Address</label><input type="email" name="email" value="{{ user.Email }}" class="mt-1 w-full px-4 py-2 bg-gray-50 border rounded-lg focus:ring-teal-500 outline-none"></div>
+                <div><label class="block text-sm font-medium text-gray-700">Phone Number</label><input type="text" name="phone" value="{{ user.Phone }}" class="mt-1 w-full px-4 py-2 bg-gray-50 border rounded-lg focus:ring-teal-500 outline-none"></div>
                 <div><label class="block text-sm font-medium text-gray-700">Account Role</label><input type="text" value="{{ user.Role }}" disabled class="mt-1 w-full px-4 py-2 bg-gray-200 border rounded-lg text-gray-500 cursor-not-allowed"></div>
             </div>
             <div class="border-t border-gray-200 my-6"></div>
